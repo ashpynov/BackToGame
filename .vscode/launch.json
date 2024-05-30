@@ -1,0 +1,36 @@
+{
+    "configurations": [
+        {
+            "name": "Debug PlayniteSounds Desktop",
+            "type": "clr",
+            "request": "launch",
+            "preLaunchTask": "build debug",
+            "program": "C:\\Tools\\Playnite\\Playnite.DesktopApp.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "logging": {
+                "programOutput": true,
+                "moduleLoad": false,
+                "processExit": false
+            }
+        },
+        {
+            "name": "Debug PlayniteSounds Fullscreen",
+            "type": "clr",
+            "request": "launch",
+            "preLaunchTask": "build debug",
+            "program": "C:\\Tools\\Playnite\\Playnite.FullscreenApp.exe",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "stopAtEntry": false,
+            "console": "internalConsole",
+            "logging": {
+                "programOutput": true,
+                "moduleLoad": false,
+                "processExit": false
+            }
+        }
+    ]
+}

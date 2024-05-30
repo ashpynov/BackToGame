@@ -1,0 +1,5 @@
+{
+    "logViewer.watch": [
+        "c:\\tools\\playnite\\*.log"
+    ]
+}
