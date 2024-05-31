@@ -1,5 +1,11 @@
 AddonId: 'BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7'
 Packages:
+  - Version: 0.2
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-05-31
+    PackageUrl: https://github.com/ashpynov/BackToGame/releases/download/v0.2/BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7_0_2.pext
+    Changelog:
+      - Fixed crash on steam games
   - Version: 0.1
     RequiredApiVersion: 6.11.0
     ReleaseDate: 2024-05-30
