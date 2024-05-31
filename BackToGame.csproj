@@ -18,6 +18,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="PlayniteSDK" Version="6.11.0" />
+        <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     </ItemGroup>
     <ItemGroup>
         <None Include="extension.yaml">

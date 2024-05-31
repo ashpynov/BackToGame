@@ -39,10 +39,28 @@ You should make modification under ```PART_PanelActionButtons``` section and add
 - ```LOCBackToGame``` - is translatable resource to show 'Back to game' text
 - ```Path=ActivateGame``` - handler to call game activation.
 
+Banner/Badge 'Back to game' on came list cards may be implemented in this way:
+```xml
+    <TextBlock x:Name="GameIsRunningBadge"
+        Visibility="{Binding ElementName=BackToGame_Control, Path=Content.IsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
+        Background="{DynamicResource GlyphTransparentBrush}"
+        Text="{DynamicResource LOCGameRunning}"
+        VerticalAlignment="Bottom"
+        TextAlignment="Center"
+        Margin="0,0,0,15"
+        Padding="0,0,0,5"
+        FontSize="{DynamicResource ThemeFontSmallSize}"
+        Style="{DynamicResource ButtonTextBlockBoldStyle}" />
+...
+    <DataTrigger Binding="{Binding ElementName=BackToGame_Control, Path=Content.IsRunning}" Value="True" >
+        <Setter Property="Text" Value="{DynamicResource LOCBackToGame}" TargetName="GameIsRunningBadge" />
+    </DataTrigger>
+
+```
 
 ## Background
 
-As soon as ```ActivateGame``` commadt is invoked - extension will try to detect game window basing on process Id remembered on game launch.
+As soon as ```ActivateGame``` command is invoked - extension will try to detect game window basing on process Id remembered on game launch.
 
 After window is found it will issue Minimize and then Restore command to reactivate game window.
 

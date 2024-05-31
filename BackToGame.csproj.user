@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>Fullscreen</ActiveDebugProfile>
+    <ActiveDebugProfile>Desktop</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

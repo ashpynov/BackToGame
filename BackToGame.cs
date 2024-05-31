@@ -1,28 +1,14 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Events;
-using Playnite.SDK.Models;
 using Playnite.SDK.Plugins;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.IO;
-using BackToGame.Controls;
-using System.Security.Cryptography.X509Certificates;
-
 using System.Reflection;
+using BackToGame.Controls;
 
-using System.Windows.Media;
-using System.Media;
-using System.ComponentModel;
-
-using System.Diagnostics;
-using Microsoft.Win32;
-using System.Windows;
-using System.IO.Compression;
-using System.Threading;
 
 namespace BackToGame
 {
@@ -34,17 +20,23 @@ namespace BackToGame
         static public BackToGameControl Control { get; private set; }
         public override Guid Id { get; } = Guid.Parse("c05dfa72-e302-44cf-9612-af1f7caa07f7");
 
-        IPlayniteAPI PlayniteAPI;
+        static public List<BackToGameControl> controls = new List<BackToGameControl>();
+
+        static IPlayniteAPI PlayniteAPI;
 
         public BackToGame(IPlayniteAPI api) : base(api)
         {
             PlayniteAPI = api;
+            Control = new BackToGameControl(PlayniteAPI);
+            Injector.InjectBackToGameCommmand(api, Control);
+
             Properties = new GenericPluginProperties
             {
                 HasSettings = false
             };
             Localization.SetPluginLanguage(PluginFolder, PlayniteAPI.ApplicationSettings.Language);
-            Control = new BackToGameControl(PlayniteAPI);
+
+            controls.Add(Control);
 
             #region Control constructor
 
@@ -70,15 +62,22 @@ namespace BackToGame
 
             switch (controlType)
             {
-                case "BackToGame":
-                    return new BackToGameControl(PlayniteAPI);
+                case "Control":
+                    controls.Add(new BackToGameControl(PlayniteAPI));
+                    return controls.Last();
                 default:
                     throw new ArgumentException($"Unrecognized controlType '{controlType}' for request '{args.Name}'");
             }
         }
 
-        public override void OnGameStarted(OnGameStartedEventArgs args) => Control.OnGameStarted(args.Game, args.StartedProcessId);
+        public override void OnGameStarted(OnGameStartedEventArgs args)
+        {
+            foreach (BackToGameControl c in controls) c.OnGameStarted(args.Game, args.StartedProcessId);
+        }
 
-        public override void OnGameStopped(OnGameStoppedEventArgs args) => Control.OnGameStopped(args.Game);
-    }
+        public override void OnGameStopped(OnGameStoppedEventArgs args)
+        {
+            foreach (BackToGameControl c in controls) c.OnGameStopped(args.Game);
+        }
+   }
 }

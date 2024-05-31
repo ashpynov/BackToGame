@@ -1,5 +1,12 @@
 AddonId: 'BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7'
 Packages:
+  - Version: 0.3
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-06-01
+    PackageUrl: https://github.com/ashpynov/BackToGame/releases/download/v0.3/BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7_0_3.pext
+    Changelog:
+      - Injection into GameStart commands to non-theme support of already runned games from game list in fullscreen and desktop modes
+      - Multi control work for theme to be abailable to show 'back to game' on cards.
   - Version: 0.2
     RequiredApiVersion: 6.11.0
     ReleaseDate: 2024-05-31

@@ -12,7 +12,7 @@ namespace BackToGame.Controls
     public partial class BackToGameControl : PluginUserControl, INotifyPropertyChanged
     {
         static IPlayniteAPI PlayniteAPI;
-        static readonly private Dictionary<string, int> ProcessIds = new Dictionary<string, int>();
+        readonly private Dictionary<string, int> ProcessIds = new Dictionary<string, int>();
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string name = null)
@@ -20,7 +20,7 @@ namespace BackToGame.Controls
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        public BackToGameControl(IPlayniteAPI api)
+        public BackToGameControl(IPlayniteAPI api): base()
         {
             PlayniteAPI = api;
             InitializeComponent();
@@ -59,28 +59,44 @@ namespace BackToGame.Controls
 
         public bool IsRunning
         {
-            get =>  ControlGame?.IsRunning ?? false
+            get =>  (ControlGame?.IsRunning ?? false)
                     && SupportedTrackingMode(ControlGame)
                     && ProcessIds.ContainsKey(ControlGame.Id.ToString());
+        }
+        public bool GameIsRunning(Game game)
+        {
+            Game g = game ?? ControlGame;
+            return g?.IsRunning ?? false
+                    && SupportedTrackingMode(g)
+                    && ProcessIds.ContainsKey(g.Id.ToString());
         }
 
         public void OnGameStarted(Game game, int processId)
         {
+            if (GameContext != null && GameContext.Id != game.Id)
+                return;
+
             ProcessIds[game.Id.ToString()] = processId;
-            game.PropertyChanged += OnGameChanged;
+            (GameContext ?? game).PropertyChanged += OnGameChanged;
             OnPropertyChanged("IsRunning");
+            OnPropertyChanged("TestRunning");
         }
 
         public void OnGameStopped(Game game)
         {
-            game.PropertyChanged -= OnGameChanged;
+            if (GameContext != null && GameContext.Id != game.Id)
+                return;
+
+            (GameContext ?? game).PropertyChanged -= OnGameChanged;
             ProcessIds.Remove(game.Id.ToString());
             OnPropertyChanged("IsRunning");
+            OnPropertyChanged("TestRunning");
         }
 
         public void OnGameChanged(object sender, PropertyChangedEventArgs args)
         {
             OnPropertyChanged("IsRunning");
+            OnPropertyChanged("TestRunning");
             OnPropertyChanged(args.PropertyName);
         }
     }
