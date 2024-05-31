@@ -31,10 +31,11 @@ namespace BackToGame
         private static readonly ILogger logger = LogManager.GetLogger();
         private static readonly string PluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public BackToGameControl Control { get; }
+        static public BackToGameControl Control { get; private set; }
         public override Guid Id { get; } = Guid.Parse("c05dfa72-e302-44cf-9612-af1f7caa07f7");
 
         IPlayniteAPI PlayniteAPI;
+
         public BackToGame(IPlayniteAPI api) : base(api)
         {
             PlayniteAPI = api;
@@ -76,8 +77,8 @@ namespace BackToGame
             }
         }
 
-        public override void OnGameStarted(OnGameStartedEventArgs args) => BackToGameControl.OnGameStarted(args.Game, args.StartedProcessId);
+        public override void OnGameStarted(OnGameStartedEventArgs args) => Control.OnGameStarted(args.Game, args.StartedProcessId);
 
-        public override void OnGameStopped(OnGameStoppedEventArgs args) => BackToGameControl.OnGameStopped(args.Game);
+        public override void OnGameStopped(OnGameStoppedEventArgs args) => Control.OnGameStopped(args.Game);
     }
 }

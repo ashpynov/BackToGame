@@ -1,17 +1,24 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Playnite.SDK;
 using Playnite.SDK.Controls;
 using Playnite.SDK.Models;
 using BackToGame.Locator;
-
 namespace BackToGame.Controls
 {
 
-    public partial class BackToGameControl : PluginUserControl
+    public partial class BackToGameControl : PluginUserControl, INotifyPropertyChanged
     {
         static IPlayniteAPI PlayniteAPI;
         static readonly private Dictionary<string, int> ProcessIds = new Dictionary<string, int>();
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+        }
 
         public BackToGameControl(IPlayniteAPI api)
         {
@@ -22,7 +29,7 @@ namespace BackToGame.Controls
 
         public RelayCommand<object> ActivateGame  { get => new RelayCommand<object>(ActivateGameCommand); }
 
-        private Game ControlGame => GameContext ?? PlayniteAPI.MainView.SelectedGames.FirstOrDefault();
+        private Game ControlGame => GameContext ?? PlayniteAPI.MainView?.SelectedGames?.FirstOrDefault();
 
         private int GetProcessId(Game game)
         {
@@ -36,33 +43,45 @@ namespace BackToGame.Controls
             var processId = GetProcessId(game);
             if (processId==-1) return;
 
-            var trackingMode = game.GameActions.FirstOrDefault().TrackingMode;
-            if (SupportedTrackingMode(trackingMode))
+            if (SupportedTrackingMode(game))
             {
                 ProcessTreeLocator.BringProcessToFront(processId);
             }
         }
 
-        private bool SupportedTrackingMode( TrackingMode mode )
+        private bool SupportedTrackingMode(Game game)
         {
+            var mode = ControlGame?.GameActions?.FirstOrDefault()?.TrackingMode ?? TrackingMode.Default;
             return mode == TrackingMode.Default
                 || mode == TrackingMode.Process
                 || mode == TrackingMode.OriginalProcess;
         }
-        public bool IsRunning {
-            get => ControlGame.IsRunning
-                    && SupportedTrackingMode(ControlGame.GameActions.FirstOrDefault().TrackingMode)
+
+        public bool IsRunning
+        {
+            get =>  ControlGame?.IsRunning ?? false
+                    && SupportedTrackingMode(ControlGame)
                     && ProcessIds.ContainsKey(ControlGame.Id.ToString());
         }
 
-        static public void OnGameStarted( Game game, int processId)
+        public void OnGameStarted(Game game, int processId)
         {
             ProcessIds[game.Id.ToString()] = processId;
+            game.PropertyChanged += OnGameChanged;
+            OnPropertyChanged("IsRunning");
         }
 
-        static public void OnGameStopped( Game game)
+        public void OnGameStopped(Game game)
         {
+            game.PropertyChanged -= OnGameChanged;
             ProcessIds.Remove(game.Id.ToString());
+            OnPropertyChanged("IsRunning");
+        }
+
+        public void OnGameChanged(object sender, PropertyChangedEventArgs args)
+        {
+            OnPropertyChanged("IsRunning");
+            OnPropertyChanged(args.PropertyName);
         }
     }
 }
