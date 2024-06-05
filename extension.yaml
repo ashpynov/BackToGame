@@ -5,3 +5,16 @@ Version: 0.3
 Module: BackToGame.dll
 Type: GenericPlugin
 Icon: icon.png
+Links:
+    - Name: Github
+      Url: https://github.com/ashpynov/BackToGame
+    - Name: License
+      Url: https://github.com/ashpynov/BackToGame/LICENSE
+    - Name: Support(Discord)
+      Url: https://discord.com/channels/365863063296933888/808419165311467630
+    - Name: Bug tracker
+      Url: https://github.com/ashpynov/BackToGame/issues
+    - Name: Ko-fi for Tips
+      Url: https://ko-fi.com/ashpynov
+    - Name: Boosty for Tips
+      Url: https://boosty.to/ashpynov/donate
