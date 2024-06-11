@@ -1,10 +1,12 @@
 ﻿using Playnite.SDK;
 using Playnite.SDK.Events;
 using Playnite.SDK.Plugins;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Controls;
+
 using System.IO;
 using System.Reflection;
 using BackToGame.Controls;
@@ -24,10 +26,12 @@ namespace BackToGame
 
         static IPlayniteAPI PlayniteAPI;
 
+
         public BackToGame(IPlayniteAPI api) : base(api)
         {
             PlayniteAPI = api;
             Control = new BackToGameControl(PlayniteAPI);
+
             Injector.InjectBackToGameCommmand(api, Control);
 
             Properties = new GenericPluginProperties

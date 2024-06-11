@@ -1,7 +1,9 @@
-using Playnite.SDK;
-using Playnite.SDK.Models;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Windows;
+using System.Linq;
+using Playnite.SDK;
+using Playnite.SDK.Models;
 using BackToGame.Controls;
 
 namespace BackToGame
@@ -39,6 +41,7 @@ namespace BackToGame
                 "StartGameCommand"
             }) InjectProxy(command);
 
+            EventManager.RegisterClassHandler(typeof(Window), Window.LoadedEvent, new RoutedEventHandler(Window_Loaded));
         }
 
         static private void StartOrBackToGame<T>( T game, string commandName)
@@ -88,5 +91,23 @@ namespace BackToGame
             }
         }
 
+        static private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!Control.GameIsRunning(null)) return;
+            if (sender.GetType().Name != "GameMenuWindow") return;
+
+            try
+            {
+                IEnumerable<DependencyObject> buttons = (sender as DependencyObject).FindVisualChildren<DependencyObject>("Playnite.FullscreenApp.Controls.ButtonEx");
+                var name = ResourceProvider.GetString("LOCPlayGame");
+                dynamic target = buttons.FirstOrDefault(w => (w as dynamic)?.DataContext?.Title == name);
+                target.Command = new RelayCommandExt<Window, object>(sender as Window, (dialog, obj) =>
+                {
+                    dialog.Close();
+                    Control.ActivateGame.Execute(null);
+                });
+            }
+            catch { };
+        }
     }
 }
