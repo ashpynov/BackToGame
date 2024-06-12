@@ -14,6 +14,7 @@ using BackToGame.Controls;
 
 namespace BackToGame
 {
+    using wrefBackToGameControl = WeakReference<BackToGameControl>;
     public class BackToGame : GenericPlugin
     {
         private static readonly ILogger logger = LogManager.GetLogger();
@@ -22,7 +23,8 @@ namespace BackToGame
         static public BackToGameControl Control { get; private set; }
         public override Guid Id { get; } = Guid.Parse("c05dfa72-e302-44cf-9612-af1f7caa07f7");
 
-        static public List<BackToGameControl> controls = new List<BackToGameControl>();
+
+        static public List<wrefBackToGameControl> controlWeakRefs = new List<wrefBackToGameControl>();
 
         static IPlayniteAPI PlayniteAPI;
 
@@ -40,7 +42,7 @@ namespace BackToGame
             };
             Localization.SetPluginLanguage(PluginFolder, PlayniteAPI.ApplicationSettings.Language);
 
-            controls.Add(Control);
+            controlWeakRefs.Add(new wrefBackToGameControl(Control));
 
             #region Control constructor
 
@@ -58,6 +60,11 @@ namespace BackToGame
             #endregion
         }
 
+        private void CleanControlsRefs()
+        {
+            controlWeakRefs.RemoveAll(wr => wr.TryGetTarget(out BackToGameControl c) == false);
+        }
+
         public override Control GetGameViewControl(GetGameViewControlArgs args)
         {
             var strArgs = args.Name.Split('_');
@@ -67,8 +74,10 @@ namespace BackToGame
             switch (controlType)
             {
                 case "Control":
-                    controls.Add(new BackToGameControl(PlayniteAPI));
-                    return controls.Last();
+                    var control = new BackToGameControl(PlayniteAPI);
+                    controlWeakRefs.Add(new wrefBackToGameControl(control));
+                    CleanControlsRefs();
+                    return control;
                 default:
                     throw new ArgumentException($"Unrecognized controlType '{controlType}' for request '{args.Name}'");
             }
@@ -76,12 +85,22 @@ namespace BackToGame
 
         public override void OnGameStarted(OnGameStartedEventArgs args)
         {
-            foreach (BackToGameControl c in controls) c.OnGameStarted(args.Game, args.StartedProcessId);
+            CleanControlsRefs();
+            foreach (wrefBackToGameControl c in controlWeakRefs)
+            {
+                if (c.TryGetTarget(out BackToGameControl control))
+                    control.OnGameStarted(args.Game, args.StartedProcessId);
+            }
         }
 
         public override void OnGameStopped(OnGameStoppedEventArgs args)
         {
-            foreach (BackToGameControl c in controls) c.OnGameStopped(args.Game);
+            CleanControlsRefs();
+            foreach (wrefBackToGameControl c in controlWeakRefs)
+            {
+                if (c.TryGetTarget(out BackToGameControl control))
+                    control.OnGameStopped(args.Game);
+            }
         }
    }
 }

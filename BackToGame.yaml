@@ -1,5 +1,11 @@
 AddonId: 'BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7'
 Packages:
+  - Version: 0.5
+    RequiredApiVersion: 6.11.0
+    ReleaseDate: 2024-06-12
+    PackageUrl: https://github.com/ashpynov/BackToGame/releases/download/v0.4/BackToGame_c05dfa72-e302-44cf-9612-af1f7caa07f7_0_5.pext
+    Changelog:
+      - Be memory usage friendly
   - Version: 0.4
     RequiredApiVersion: 6.11.0
     ReleaseDate: 2024-06-11
