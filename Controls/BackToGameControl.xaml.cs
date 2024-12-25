@@ -6,6 +6,7 @@ using Playnite.SDK;
 using Playnite.SDK.Controls;
 using Playnite.SDK.Models;
 using BackToGame.Locator;
+using System.Windows;
 namespace BackToGame.Controls
 {
 
@@ -29,8 +30,18 @@ namespace BackToGame.Controls
 
         public RelayCommand<object> ActivateGame  { get => new RelayCommand<object>(ActivateGameCommand); }
 
-        private Game ControlGame => GameContext ?? PlayniteAPI.MainView?.SelectedGames?.FirstOrDefault();
+        private Game ControlGame
+        {
+            get
+            {
+                if (GameContext is Game) return GameContext;
 
+                dynamic ctx = Application.Current.MainWindow.DataContext;
+                Game game = ctx.GameStatusVisible ? game = ctx.GameStatusView?.Game?.Game as Game : null;
+
+                return game ?? ctx.SelectedGameDetails?.Game?.Game as Game ?? PlayniteAPI.MainView?.SelectedGames?.FirstOrDefault();
+            }
+        }
         private int GetProcessId(Game game)
         {
             try     { return ProcessIds[game.Id.ToString()]; }
