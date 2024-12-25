@@ -7,6 +7,7 @@ using Playnite.SDK.Controls;
 using Playnite.SDK.Models;
 using BackToGame.Locator;
 using System.Windows;
+using System.Runtime.InteropServices.ComTypes;
 namespace BackToGame.Controls
 {
 
@@ -37,10 +38,16 @@ namespace BackToGame.Controls
                 if (GameContext is Game) return GameContext;
 
                 dynamic ctx = Application.Current.MainWindow.DataContext;
-                Game game = ctx.GameStatusVisible ? game = ctx.GameStatusView?.Game?.Game as Game : null;
+                if (ctx.GetType().Name != "FullscreenAppViewModel")
+                {
+                    ctx = null;
+                }
 
-                return game ?? ctx.SelectedGameDetails?.Game?.Game as Game ?? PlayniteAPI.MainView?.SelectedGames?.FirstOrDefault();
+                Game game = ctx?.GameStatusVisible == true ? game = ctx.GameStatusView?.Game?.Game as Game : null;
+
+                return game ?? ctx?.SelectedGameDetails?.Game?.Game as Game ?? PlayniteAPI.MainView?.SelectedGames?.FirstOrDefault();
             }
+
         }
         private int GetProcessId(Game game)
         {
